@@ -1,29 +1,26 @@
 import './assets/scss/app.scss';
 import $ from 'cash-dom';
-
+import es6Promise from 'es6-promise';
+es6Promise.polyfill()
+import 'isomorphic-fetch';
+import 'babel-polyfill';
 
 export class App {
   initializeApp() {
-    let self = this;
-
-    $('.load-username').on('click', function (e) {
-      let userName = $('.username.input').val();
-
-      fetch('https://api.github.com/users/' + userName)
-        .then((response)=> {response.json})
-        .then(function (body) {
-          self.profile = body;
-          self.update_profile();
-        })
-
-    })
-
+    $('.load-username').on('click', this.fetchUserProfile.bind(this))
   }
 
-  update_profile() {
+  async fetchUserProfile(e) {
+    const userName = $('.username.input').val();
+    const response = await fetch(`https://api.github.com/users/${userName}`)
+    const body = await response.json()
+    this.updateProfile(body)
+  }
+
+  updateProfile({ avatar_url, login, html_url, bio }) {
     $('#profile-name').text($('.username.input').val())
-    $('#profile-image').attr('src', this.profile.avatar_url)
-    $('#profile-url').attr('href', this.profile.html_url).text(this.profile.login)
-    $('#profile-bio').text(this.profile.bio || '(no information)')
+    $('#profile-image').attr('src', avatar_url)
+    $('#profile-url').attr('href', html_url).text(login)
+    $('#profile-bio').text(bio || '(no information)')
   }
 }
