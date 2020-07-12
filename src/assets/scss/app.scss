@@ -32,3 +32,12 @@
 .timeline .timeline-item {
   padding-bottom: 1em;
 }
+
+.username {
+  box-sizing: border-box;
+  transition: border-color 300ms ease-in-out;
+}
+
+.has-error {
+  border-color: red;
+}
