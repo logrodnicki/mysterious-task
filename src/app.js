@@ -8,13 +8,14 @@ import moment from 'moment';
 
 const EVENT_PULL_REQUEST = 'PullRequestEvent';
 const EVENT_PULL_REQUEST_COMMENT = 'PullRequestReviewCommentEvent';
+const API_URL = 'https://api.github.com/users';
 
 export class App {
   initializeApp() {
     $('.load-username').on('click', this.fetchUserInfo.bind(this));
   }
 
-  fetchUserInfo (e) {
+  async fetchUserInfo (e) {
     const userInput = $('.username.input');
     const userName = userInput.val();
 
@@ -25,18 +26,39 @@ export class App {
       return;
     }
 
-    this.fetchUserProfile(userName);
-    this.fetchUserEvents(userName);
+    const spinner = $('#spinner');
+    const profile = $('#profile');
+    const profilePlaceholder = $('#profile-placeholder');
+    const timeline = $('#user-timeline');
+    const timelinePlaceholder = $('#timeline-placeholder');
+    const hiddenClass = 'is-hidden'
+
+    this.addClass([profile, timeline], hiddenClass);
+    this.removeClass([spinner, profilePlaceholder, timelinePlaceholder], hiddenClass);
+
+    await this.fetchUserProfile(userName);
+    await this.fetchUserEvents(userName);
+
+    this.addClass([spinner, profilePlaceholder, timelinePlaceholder], hiddenClass);
+    this.removeClass([profile, timeline], hiddenClass);
+  }
+
+  addClass (elements, selectorClass) {
+    elements.map(element => element.addClass(selectorClass));
+  }
+
+  removeClass (elements, selectorClass) {
+    elements.map(element => element.removeClass(selectorClass));
   }
 
   async fetchUserProfile (userName) {
-    const response = await fetch(`https://api.github.com/users/${userName}`);
+    const response = await fetch(`${API_URL}/${userName}`);
     const body = await response.json();
     this.updateProfile(body);
   }
 
   async fetchUserEvents (userName) {
-    const response = await fetch(`https://api.github.com/users/${userName}/events/public`);
+    const response = await fetch(`${API_URL}/${userName}/events/public`);
     const body = await response.json();
 
     let events = '';
