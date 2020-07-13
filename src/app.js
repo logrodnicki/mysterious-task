@@ -1,14 +1,12 @@
-import './assets/scss/app.scss';
 import $ from 'cash-dom';
 import es6Promise from 'es6-promise';
 es6Promise.polyfill()
 import 'isomorphic-fetch';
 import 'babel-polyfill';
-import moment from 'moment';
 
 const EVENT_PULL_REQUEST = 'PullRequestEvent';
 const EVENT_PULL_REQUEST_COMMENT = 'PullRequestReviewCommentEvent';
-const API_URL = 'https://api.github.com/users';
+const API_URL = 'https://api.github.com';
 
 export class App {
   initializeApp() {
@@ -52,13 +50,13 @@ export class App {
   }
 
   async fetchUserProfile (userName) {
-    const response = await fetch(`${API_URL}/${userName}`);
+    const response = await fetch(`${API_URL}/users/${userName}`);
     const body = await response.json();
     this.updateProfile(body);
   }
 
   async fetchUserEvents (userName) {
-    const response = await fetch(`${API_URL}/${userName}/events/public`);
+    const response = await fetch(`${API_URL}/users/${userName}/events/public`);
     const body = await response.json();
 
     let events = '';
@@ -92,12 +90,14 @@ export class App {
 
     const template = $('#template-pull-request');
 
-    const formatedCreatedAt = moment(createdAt).format('ll');
+    const createdAtDate = new Date(createdAt);
+    const formatter = new Intl.DateTimeFormat('en', { month: 'short' });
+    const formatedCreatedAt = `${formatter.format(createdAtDate)} ${createdAtDate.getDate()}, ${createdAtDate.getFullYear()}`
 
     $(template).find('.gh-username a').html(login).attr('href', url);
     $(template).find('.gh-username img').attr('src', avatar);
     $(template).find('.pull-request-link').attr('href', pullRequestUrl);
-    $(template).find('.repo-name a').html(repoName).attr('href', `https://github.com/${repoName}`);
+    $(template).find('.repo-name a').html(repoName).attr('href', `${API_URL}/${repoName}`);
     $(template).find('.heading').html(formatedCreatedAt);
     $(template).find('.request-action').html(action);
 
@@ -111,12 +111,14 @@ export class App {
 
     const template = $('#template-pull-request-comment');
 
-    const formatedCreatedAt = moment(createdAt).format('ll');
+    const createdAtDate = new Date(createdAt);
+    const formatter = new Intl.DateTimeFormat('en', { month: 'short' });
+    const formatedCreatedAt = `${formatter.format(createdAtDate)} ${createdAtDate.getDate()}, ${createdAtDate.getFullYear()}`
 
     $(template).find('.gh-username a').html(login).attr('href', url);
     $(template).find('.gh-username img').attr('src', avatar);
     $(template).find('.pull-request-link').attr('href', pullRequestUrl);
-    $(template).find('.repo-name a').html(repoName).attr('href', `https://github.com/${repoName}`);
+    $(template).find('.repo-name a').html(repoName).attr('href', `${API_URL}/${repoName}`);
     $(template).find('.heading').html(formatedCreatedAt);
     $(template).find('.pull-request-comment-link').attr('href', commentUrl);
 

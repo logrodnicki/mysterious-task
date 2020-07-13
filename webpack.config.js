@@ -2,7 +2,8 @@ const path = require('path'),
   webpack = require('webpack'),
   CleanWebpackPlugin = require('clean-webpack-plugin'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
-  ExtractTextPlugin = require('extract-text-webpack-plugin');
+  ExtractTextPlugin = require('extract-text-webpack-plugin'),
+  MinifyPlugin = require("babel-minify-webpack-plugin");
 
 const extractPlugin = new ExtractTextPlugin({filename: './assets/css/app.css'});
 
@@ -21,7 +22,6 @@ const config = {
 
   module: {
     rules: [
-
       {
         test: /\.js$/,
         include: /src/,
@@ -72,14 +72,14 @@ const config = {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: ['file-loader']
       }
-
     ]
   },
 
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({template: 'index.html'}),
-    extractPlugin
+    extractPlugin,
+    new MinifyPlugin()
   ],
 
   devServer: {
@@ -90,8 +90,7 @@ const config = {
     open: true
   },
 
-  devtool: 'inline-source-map'
-
+  devtool: 'source-map'
 };
 
 module.exports = config;
