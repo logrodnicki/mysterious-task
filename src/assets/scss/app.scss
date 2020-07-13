@@ -5,6 +5,11 @@
   display: none;
 }
 
+.container > div {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .navbar {
   border-bottom: 1px solid #eee;
   margin-bottom: 8px;
@@ -127,5 +132,22 @@
     @include placeholder;
     height: 1rem;
     width: 100%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .profile-container,
+  .events-container {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1281px) {
+  .profile-container {
+    width: 30%;
+  }
+
+  .events-container {
+    width: 70%;
   }
 }
